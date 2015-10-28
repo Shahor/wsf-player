@@ -14,13 +14,14 @@
 
 		var script = document.createElement('script');
 		script.setAttribute('src', url);
+		// I feel dirty
+		cb = callback;
 
 		document.body.appendChild(script);
 
 		script.addEventListener('load', function (e) {
 			script.remove();
-		})
-		cb = callback;
+		});
 	}
 
 	window.jsonpCallback = function (data) {
