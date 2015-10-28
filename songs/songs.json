@@ -1,0 +1,17 @@
+jsonpCallback([{
+	"artist" : "Zack Linton",
+	"title" : "Maybe I'm in love",
+	"url"	: "songs/1.mp3"
+}, {
+	"artist" : "The ARTISANS Beats",
+	"title" : "True moment",
+	"url"	: "songs/2.mp3"
+}, {
+	"artist" : "Jeffrey Philip Nelson",
+	"title" : "Seventeen",
+	"url"	: "songs/3.mp3"
+}, {
+	"artist" : "Fallen to Flux",
+	"title" : "From the outside, looking in",
+	"url"	: "songs/4.mp3"
+}]);
