@@ -32,6 +32,10 @@
 	li {
 		cursor: pointer;
 	}
+
+	li.playing {
+		background-color: pink;
+	}
 	</style>
 </head>
 <body>
@@ -41,9 +45,12 @@
 		<input id="reader" type="button" value="Play"/>
 		<input id="stop" type="button" value="Stop"/>
 
+		<input id="next" type="button" value="Next"/>
+		<input id="prev" type="button" value="Prev"/>
+
 		<br/>
 		<span>Volume :</span>
-		<input id="volume" type="range" value="1" min="0" max="1" step="0.01"/>
+		<input id="volume" type="range" value="0" min="0" max="1" step="0.01"/>
 
 		<br/>
 		<span>Playback rate :</span>

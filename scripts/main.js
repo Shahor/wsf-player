@@ -11,22 +11,34 @@
 			ProgressBar = document.querySelector("#progress"),
 			Playlistcontainer = document.querySelector('#playlistContainer');
 
+		var playlist = null;
+
 
 		doXHR('songs/songs.json', function (songs) {
+			playlist = songs;
+			Playlistcontainer.textContent = '';
+
 			songs.forEach(function (song, index) {
 				var songElement = document.createElement('li');
-				songElement.setAttribute('songNumber', index);
+				songElement.setAttribute('trackNumber', index);
 				songElement.setAttribute('url', song.url);
 				songElement.textContent = song.artist + ' - ' + song.title;
 				Playlistcontainer.appendChild(songElement);
 			});
 		});
 
+		audioPlayer.addEventListener('canplay', function () {
+			audioPlayer.play();
+		})
+
 		Playlistcontainer.addEventListener('click', function (e) {
-			var target = e.target;
+			var target = e.target,
+				trackNumber = parseInt(target.getAttribute('trackNumber'), 10);
 
 			audioPlayer.setAttribute('src', target.getAttribute('url'));
-			// audioPlayer.play();
+			audioPlayer.trackNumber = parseInt(target.getAttribute('trackNumber'), 10);
+			highlightTrack(trackNumber);
+			audioPlayer.play();
 		});
 
 		/**
@@ -40,6 +52,37 @@
 			}
 
 			Timemarker.style.display = display;
+		}
+
+		function stopReading() {
+			audioPlayer.pause();
+			audioPlayer.currentTime = audioPlayer.trackNumber = ProgressBar.value = 0;
+
+			/* The audio tag is buggy. Calling load after having removed the src
+			will effectively empty the buffer but will prevent the 'pause' event
+			to be triggered (we called .pause()), therefore leaving our player in a
+			shitty state. This is my dirty trick to prevent that. */
+			setTimeout(function () {
+				audioPlayer.removeAttribute('src');
+				audioPlayer.load();
+			}, 0);
+
+			displayTimemarker(false);
+			cleanHighlights();
+		}
+
+		function cleanHighlights() {
+			Array.from(document.querySelectorAll('.playing')).forEach(function (element) {
+				element.classList.remove('playing');
+			})
+		}
+
+		function highlightTrack(track) {
+			track = document.querySelector("li[trackNumber='" + track + "']");
+
+			cleanHighlights();
+			if (!track) return;
+			track.classList.add('playing');
 		}
 
 		audioPlayer.addEventListener('pause', function () {
@@ -57,7 +100,14 @@
 
 		audioPlayer.addEventListener('ended', function () {
 			displayTimemarker(false);
-			ProgressBar.value = 0;
+
+			if (audioPlayer.trackNumber < playlist.length - 2) {
+				audioPlayer.trackNumber++;
+				audioPlayer.setAttribute('src', playlist[audioPlayer.trackNumber].url);
+				highlightTrack(audioPlayer.trackNumber);
+			} else {
+				stopReading();
+			}
 		});
 
 		Controls.addEventListener('click', function (e) {
@@ -68,16 +118,36 @@
 				if (isPlaying) {
 					audioPlayer.pause();
 				} else {
-					audioPlayer.play();
+					if (!audioPlayer.hasAttribute('src')) {
+						audioPlayer.trackNumber = 0;
+						audioPlayer.setAttribute('src', playlist[0].url);
+						highlightTrack(0);
+					} else {
+						audioPlayer.play();
+					}
 				}
 			}
 
 			// Stop the player
 			if (target.id === 'stop') {
-				audioPlayer.pause();
+				stopReading();
+			}
 
-				audioPlayer.currentTime = 0;
-				displayTimemarker(false);
+			if (['next', 'prev'].indexOf(target.id) >= 0) {
+				if (!isPlaying) return;
+
+				if (target.id === 'next') {
+					audioPlayer.trackNumber += 1;
+				} else {
+					audioPlayer.trackNumber -= 1;
+				}
+
+				if (audioPlayer.trackNumber < 0 || audioPlayer.trackNumber > playlist.length - 1) {
+					stopReading();
+				} else {
+					audioPlayer.setAttribute('src', playlist[audioPlayer.trackNumber].url);
+					highlightTrack(audioPlayer.trackNumber)
+				}
 			}
 		});
 
@@ -105,6 +175,7 @@
 
 		// Handle the ProgressBar logic
 		ProgressBar.addEventListener('click', function (e) {
+			if (!isPlaying) return;
 			var controlPosition = ProgressBar.getBoundingClientRect(),
 				mousePosition = e.clientX,
 				progressWidth = this.clientWidth;
