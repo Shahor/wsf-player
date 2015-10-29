@@ -71,12 +71,21 @@
 			cleanHighlights();
 		}
 
+		/*
+		Remove all the highlights
+		 */
 		function cleanHighlights() {
+			// document.querySelectorAll returns a NodeList, it looks like an array, almost behaves like an array
+			// but is not an array and therefore doesn't have the .forEach method available.
+			// That's why I make an Array.from this list to have an array instead.
 			Array.from(document.querySelectorAll('.playing')).forEach(function (element) {
 				element.classList.remove('playing');
 			})
 		}
 
+		/*
+		Simple function to highlight the given track
+		 */
 		function highlightTrack(track) {
 			track = document.querySelector("li[trackNumber='" + track + "']");
 
@@ -101,6 +110,9 @@
 		audioPlayer.addEventListener('ended', function () {
 			displayTimemarker(false);
 
+			// Are there any songs left to play?
+			// Remember, playlist is an array and its index starts at 0, that's why the - 2 here, because of
+			// the 0 shift, and we want to have at least one more song to play
 			if (audioPlayer.trackNumber < playlist.length - 2) {
 				audioPlayer.trackNumber++;
 				audioPlayer.setAttribute('src', playlist[audioPlayer.trackNumber].url);
@@ -118,11 +130,13 @@
 				if (isPlaying) {
 					audioPlayer.pause();
 				} else {
+					// No track is being played, set the first track as the one we want to play, and play it
 					if (!audioPlayer.hasAttribute('src')) {
 						audioPlayer.trackNumber = 0;
 						audioPlayer.setAttribute('src', playlist[0].url);
 						highlightTrack(0);
 					} else {
+						// Resume play
 						audioPlayer.play();
 					}
 				}
@@ -142,9 +156,11 @@
 					audioPlayer.trackNumber -= 1;
 				}
 
+				// Is the new tracknumber value outside of the playlist boundaries ? (Meaning : does it represent
+				// a inexistant track?)
 				if (audioPlayer.trackNumber < 0 || audioPlayer.trackNumber > playlist.length - 1) {
 					stopReading();
-				} else {
+				} else { // new track exists, play it!
 					audioPlayer.setAttribute('src', playlist[audioPlayer.trackNumber].url);
 					highlightTrack(audioPlayer.trackNumber)
 				}
@@ -192,6 +208,11 @@
 		// Handle the time updates
 		audioPlayer.addEventListener('timeupdate', function (e) {
 			var currentTime = Math.floor(this.currentTime);
+
+			// Weird but in some cases this happens
+			if (!currentTime) {
+				currentTime = 0;
+			}
 
 			// Format the display properly
 			var minutes = Math.floor(currentTime / 60),
