@@ -8,7 +8,26 @@
 			Controls = document.querySelector('#controls'),
 			Reader = document.querySelector('#reader'),
 			Timemarker = document.querySelector('#timemarker'),
-			ProgressBar = document.querySelector("#progress");
+			ProgressBar = document.querySelector("#progress"),
+			Playlistcontainer = document.querySelector('#playlistContainer');
+
+
+		doXHR('songs/songs.json', function (songs) {
+			songs.forEach(function (song, index) {
+				var songElement = document.createElement('li');
+				songElement.setAttribute('songNumber', index);
+				songElement.setAttribute('url', song.url);
+				songElement.textContent = song.artist + ' - ' + song.title;
+				Playlistcontainer.appendChild(songElement);
+			});
+		});
+
+		Playlistcontainer.addEventListener('click', function (e) {
+			var target = e.target;
+
+			audioPlayer.setAttribute('src', target.getAttribute('url'));
+			// audioPlayer.play();
+		});
 
 		/**
 		 * @param  {Boolean} doDisplay : Wether to display or hide the timemarker

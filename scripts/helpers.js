@@ -4,6 +4,7 @@
 	var cb = function () {};
 
 	function doXHR(url, callback) {
+		callback = callback || function () {};
 		/* Pooor poooor pooooooor man's XHR
 		I'm doing this because current browsers don't allow
 		for XHR calls easily on localhost (without a server answering

@@ -18,12 +18,24 @@
 		display: inline-block;
 		display: none;
 	}
+
+	ul {
+		width: 200px;
+		min-height: 20px;
+		background-color: grey;
+		position: fixed;
+		left: 300px;
+		top: 8px;
+		font-size: 0.8em;
+	}
+
+	li {
+		cursor: pointer;
+	}
 	</style>
 </head>
 <body>
-	<audio>
-		<source src="songs/2.mp3">
-	</audio>
+	<audio></audio>
 
 	<div id="controls">
 		<input id="reader" type="button" value="Play"/>
@@ -44,6 +56,8 @@
 
 	<section id="timemarker">
 	</section>
+
+	<ul id="playlistContainer"></ul>
 
 	<script src="scripts/helpers.js"></script>
 	<script src="scripts/main.js"></script>
