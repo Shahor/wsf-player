@@ -108,6 +108,7 @@
 				seconds = currentTime % 60;
 
 			// Pad the seconds
+			if (minutes < 10) minutes = '0' + minutes;
 			if (seconds < 10) seconds = '0' + seconds;
 
 			// Display the current time
